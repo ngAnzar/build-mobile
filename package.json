@@ -1,0 +1,18 @@
+{
+  "name": "build-mobile",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ngAnzar/build-mobile.git"
+  },
+  "author": {
+    "name": "Vetési Zoltán",
+    "email": "vetesi.zoltan@gmail.com"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ngAnzar/build-mobile/issues"
+  },
+  "homepage": "https://github.com/ngAnzar/build-mobile#readme"
+}
