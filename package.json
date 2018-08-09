@@ -1,5 +1,5 @@
 {
-  "name": "build-mobile",
+  "name": "@anzar/build-mobile",
   "version": "1.0.0",
   "main": "index.js",
   "repository": {
@@ -14,5 +14,16 @@
   "bugs": {
     "url": "https://github.com/ngAnzar/build-mobile/issues"
   },
-  "homepage": "https://github.com/ngAnzar/build-mobile#readme"
+  "homepage": "https://github.com/ngAnzar/build-mobile#readme",
+  "bin": {
+    "anzar-mobile": "src/cli.js"
+  },
+  "dependencies": {
+    "@anzar/build": "ngAnzar/build",
+    "@anzar/build-browser": "ngAnzar/build-browser"
+  },
+  "peerDependencies": {
+    "cordova": "^8.0.0",
+    "webpack": "^4.5.0"
+  }
 }
