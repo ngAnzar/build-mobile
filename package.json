@@ -19,11 +19,8 @@
     "anzar-mobile": "src/cli.js"
   },
   "dependencies": {
-    "@anzar/build": "ngAnzar/build",
-    "@anzar/build-browser": "ngAnzar/build-browser"
-  },
-  "peerDependencies": {
-    "cordova": "^8.0.0",
-    "webpack": "^4.5.0"
+    "@anzar/build": "^1.0.0",
+    "@anzar/build-browser": "^1.0.0",
+    "cordova": "^8.1.2"
   }
 }
