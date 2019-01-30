@@ -1,13 +1,10 @@
 import path from "path"
 import url from "url"
 
-import webpack from "webpack"
-import HtmlWebpackPlugin from "html-webpack-plugin"
-
 import { config, options } from "@anzar/build"
 
-options.setAll({
-    __PLATFORM__: "mobile",
+
+options.setAllDefault({
     FEAT_CSS_VARIABLES: false,
     TITLE: "App is loading..."
 })

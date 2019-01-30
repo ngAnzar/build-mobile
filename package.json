@@ -21,6 +21,9 @@
   "dependencies": {
     "@anzar/build": "^1.0.0",
     "@anzar/build-browser": "^1.0.0",
+    "ncp": "^2.0.0"
+  },
+  "peerDependencies": {
     "cordova": "^8.1.2"
   }
 }
