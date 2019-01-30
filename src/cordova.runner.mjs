@@ -1,9 +1,10 @@
 import path from "path"
 import { spawn } from "child_process"
 import ncp from "ncp"
+import mkdirp from "mkdirp"
 
 
-import { cli, options } from "@anzar/build"
+import { cli, options, fancyOutputEnabled } from "@anzar/build"
 
 
 export class CordovaRunner extends cli.AbstractRunner {
@@ -22,10 +23,26 @@ export class CordovaRunner extends cli.AbstractRunner {
         const cwd = path.join(options.project_path, "cordova")
         const outPath = path.join(options.project_path, "dist", options.__MODE__)
 
-        await app.waitFor("webpack")
+        mkdirp.sync(path.join(cwd, "platforms"))
+        mkdirp.sync(path.join(cwd, "plugins"))
+        mkdirp.sync(path.join(cwd, "www"))
+
+        if (fancyOutputEnabled()) {
+            await app.waitFor("webpack")
+        }
+
+        try {
+            await this.spawn(cordova, ["platform", "add", options.__PLATFORM__], { cwd })
+        } catch (e) {
+            // pass, if platform already presented, this command is returned with error
+        }
 
         await this.spawn(cordova, ["requirements"], { cwd })
         await this.copy(outPath, path.join(cwd, "www"))
+
+        if (!fancyOutputEnabled()) {
+            await app.waitFor("webpack")
+        }
 
         switch (args.subcommand) {
             case "build":
