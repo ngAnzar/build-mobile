@@ -29,10 +29,32 @@ export class CordovaRunner extends cli.AbstractRunner {
 
         switch (args.subcommand) {
             case "build":
-                await this.spawn(cordova, ["build", options.__PLATFORM__], { cwd })
+                let buildArgs = ["build", options.__PLATFORM__]
+                let buildMode = "debug"
 
-                let outModifier = options.__MODE__ === "production" ? "" : "debug"
-                await this.copy(path.join(cwd, "platforms", options.__PLATFORM__, "app", "build", "outputs", "apk", outModifier, `app-${outModifier}.apk`), path.join(outPath, `app.apk`))
+                if (options.__MODE__ === "production") {
+                    buildArgs.push("--release")
+                    buildMode = "release"
+                }
+
+                await this.spawn(cordova, buildArgs, { cwd })
+
+                let outputPath = path.join(cwd, "platforms", options.__PLATFORM__, "app", "build", "outputs", "apk", buildMode)
+                let variants = [
+                    path.join(outputPath, `app-${buildMode}.apk`),
+                    path.join(outputPath, `app-${buildMode}-unsigned.apk`),
+                    path.join(outputPath, `app-${buildMode}-signed.apk`)
+                ]
+
+                for (const v of variants) {
+                    try {
+                        await this.copy(v, path.join(outPath, `app.apk`))
+                        break
+                    } catch (e) {
+
+                    }
+                }
+
                 break
 
             case "serve":
