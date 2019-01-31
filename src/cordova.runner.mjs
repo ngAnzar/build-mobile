@@ -1,7 +1,6 @@
+import fs from "fs-extra"
 import path from "path"
 import { spawn } from "child_process"
-import ncp from "ncp"
-import mkdirp from "mkdirp"
 
 
 import { cli, options, fancyOutputEnabled } from "@anzar/build"
@@ -23,9 +22,10 @@ export class CordovaRunner extends cli.AbstractRunner {
         const cwd = path.join(options.project_path, "cordova")
         const outPath = path.join(options.project_path, "dist", options.__MODE__)
 
-        mkdirp.sync(path.join(cwd, "platforms"))
-        mkdirp.sync(path.join(cwd, "plugins"))
-        mkdirp.sync(path.join(cwd, "www"))
+        await fs.mkdirp(path.join(cwd, "platforms"))
+        await fs.mkdirp(path.join(cwd, "plugins"))
+        await fs.mkdirp(path.join(cwd, "www"))
+        await this.updateCordovaXml(options.package_json, path.join(cwd, "config.xml"))
 
         if (fancyOutputEnabled()) {
             await app.waitFor("webpack")
@@ -37,22 +37,25 @@ export class CordovaRunner extends cli.AbstractRunner {
             // pass, if platform already presented, this command is returned with error
         }
 
-        await this.spawn(cordova, ["requirements"], { cwd })
+        await this.spawn(cordova, ["requirements", options.__PLATFORM__], { cwd })
 
         if (!fancyOutputEnabled()) {
             await app.waitFor("webpack")
         }
 
-        await this.copy(outPath, path.join(cwd, "www"))
+        await fs.copy(outPath, path.join(cwd, "www"))
+        await this.spawn(cordova, ["prepare", options.__PLATFORM__], { cwd })
 
         switch (args.subcommand) {
             case "build":
-                let buildArgs = ["build", options.__PLATFORM__]
+                let buildArgs = ["compile", options.__PLATFORM__]
                 let buildMode = "debug"
 
                 if (options.__MODE__ === "production") {
                     buildArgs.push("--release")
                     buildMode = "release"
+                } else {
+                    buildArgs.push("--debug")
                 }
 
                 await this.spawn(cordova, buildArgs, { cwd })
@@ -66,7 +69,7 @@ export class CordovaRunner extends cli.AbstractRunner {
 
                 for (const v of variants) {
                     try {
-                        await this.copy(v, path.join(outPath, `app.apk`))
+                        await fs.copy(v, path.join(outPath, `app.apk`))
                         break
                     } catch (e) {
 
@@ -119,15 +122,17 @@ export class CordovaRunner extends cli.AbstractRunner {
         return promise
     }
 
-    async copy(src, dst) {
-        return new Promise((resolve, reject) => {
-            ncp(src, dst, (err) => {
-                if (err) {
-                    reject(err)
-                } else {
-                    resolve()
-                }
-            })
-        })
+    async updateCordovaXml(packageJson, cordovaXml) {
+        const pkg = await fs.readJson(packageJson)
+        let xml = await fs.readFile(cordovaXml, "utf8")
+
+        if (!pkg.author) {
+            throw new Error(`Missing author field from ${packageJson}`)
+        }
+
+        xml = xml.replace(/(<widget[^<>]+)version=".*?"/mg, `$1version="${pkg.version}"`)
+        xml = xml.replace(/<author[\s\S]*?<\/author>/m, `<author email="${pkg.author.email}" href="${pkg.author.url}">${pkg.author.name}</author>`)
+
+        await fs.writeFile(cordovaXml, xml)
     }
 }
