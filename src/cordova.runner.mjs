@@ -38,11 +38,12 @@ export class CordovaRunner extends cli.AbstractRunner {
         }
 
         await this.spawn(cordova, ["requirements"], { cwd })
-        await this.copy(outPath, path.join(cwd, "www"))
 
         if (!fancyOutputEnabled()) {
             await app.waitFor("webpack")
         }
+
+        await this.copy(outPath, path.join(cwd, "www"))
 
         switch (args.subcommand) {
             case "build":
