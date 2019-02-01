@@ -1,16 +1,12 @@
-doctype html
+extends @anzar/build-browser/index
 
-html
-  head
-    //- Customize this policy to fit your own app's needs. For more guidance, see:
-    //- https://github.com/apache/cordova-plugin-whitelist/blob/master/README.md#content-security-policy
-    meta(http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;")
-    meta(name="format-detection" content="telephone=no")
-    meta(name="msapplication-tap-highlight" content="no")
-    meta(name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width")
-    title= htmlWebpackPlugin.options.title
-  body
-    app= `Loading...${__PLATFORM__} ZSÍR KIRÁLY`
+block meta
+  meta(charset="utf-8")
+  meta(http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;")
+  meta(name="format-detection" content="telephone=no")
+  meta(name="msapplication-tap-highlight" content="no")
+  meta(name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width")
 
-    for chunk in htmlWebpackPlugin.files.chunks
-      script(src=`${chunk.entry}` type="text/javascript" async=true)
+block base-href
+  if __PLATFORM__ == "android"
+    base(href="/android_asset/www/")
