@@ -20,7 +20,8 @@ export class CordovaRunner extends cli.AbstractRunner {
         const cordova = "cordova" + (isWin ? ".cmd" : "")
         // TODO: valami config
         const cwd = path.join(options.project_path, "cordova")
-        const outPath = path.join(options.project_path, "dist", options.__MODE__)
+        const outPath = options.out_path
+        const isServe = args.subcommand === "serve"
 
         await fs.mkdirp(path.join(cwd, "platforms"))
         await fs.mkdirp(path.join(cwd, "plugins"))
@@ -28,7 +29,7 @@ export class CordovaRunner extends cli.AbstractRunner {
         await this.updateCordovaXml(options.package_json, path.join(cwd, "config.xml"))
 
         if (fancyOutputEnabled()) {
-            await app.waitFor("webpack")
+            await app.waitFor("webpack", "compiled")
         }
 
         try {
@@ -39,54 +40,52 @@ export class CordovaRunner extends cli.AbstractRunner {
 
         await this.spawn(cordova, ["requirements", options.__PLATFORM__], { cwd })
 
-        if (!fancyOutputEnabled()) {
+        if (!isServe && !fancyOutputEnabled()) {
             await app.waitFor("webpack")
         }
 
         await fs.copy(outPath, path.join(cwd, "www"))
         await this.spawn(cordova, ["prepare", options.__PLATFORM__], { cwd })
 
-        switch (args.subcommand) {
-            case "build":
-                let buildArgs = ["compile", options.__PLATFORM__]
-                let buildMode = "debug"
+        this.emit("prepared")
 
-                if (options.__MODE__ === "production") {
-                    buildArgs.push("--release")
-                    buildMode = "release"
-                } else {
-                    buildArgs.push("--debug")
+        if (isServe) {
+            app.runners.webpack.on("compiled", () => {
+                console.log(`copy compiled to: ${path.join(cwd, "www")}`)
+                fs.copySync(outPath, path.join(cwd, "www"))
+            })
+            //browsersync
+        } else {
+            let buildArgs = ["compile", options.__PLATFORM__]
+            let buildMode = "debug"
+
+            if (options.__MODE__ === "production") {
+                buildArgs.push("--release")
+                buildMode = "release"
+            } else {
+                buildArgs.push("--debug")
+            }
+
+            await this.spawn(cordova, buildArgs, { cwd })
+
+            let outputPath = path.join(cwd, "platforms", options.__PLATFORM__, "app", "build", "outputs", "apk", buildMode)
+            let variants = [
+                path.join(outputPath, `app-${buildMode}.apk`),
+                path.join(outputPath, `app-${buildMode}-unsigned.apk`),
+                path.join(outputPath, `app-${buildMode}-signed.apk`)
+            ]
+
+            for (const v of variants) {
+                try {
+                    await fs.copy(v, path.join(outPath, `app.apk`))
+                    break
+                } catch (e) {
+
                 }
+            }
 
-                await this.spawn(cordova, buildArgs, { cwd })
-
-                let outputPath = path.join(cwd, "platforms", options.__PLATFORM__, "app", "build", "outputs", "apk", buildMode)
-                let variants = [
-                    path.join(outputPath, `app-${buildMode}.apk`),
-                    path.join(outputPath, `app-${buildMode}-unsigned.apk`),
-                    path.join(outputPath, `app-${buildMode}-signed.apk`)
-                ]
-
-                for (const v of variants) {
-                    try {
-                        await fs.copy(v, path.join(outPath, `app.apk`))
-                        break
-                    } catch (e) {
-
-                    }
-                }
-
-                break
-
-            case "serve":
-                break
+            this.emit("compiled")
         }
-
-
-        // await this.spawn("cordova", ["prepare"])
-
-
-        // return this.spawn("cordova", ["run", "--emulate", "--target", "Pixel_2_API_26"])
     }
 
     async spawn(program, args, options) {
