@@ -41,7 +41,7 @@ export class CordovaRunner extends cli.AbstractRunner {
         await this.spawn(cordova, ["requirements", options.__PLATFORM__], { cwd })
 
         if (!isServe && !fancyOutputEnabled()) {
-            await app.waitFor("webpack")
+            await app.waitFor("webpack", "compiled")
         }
 
         await fs.copy(outPath, path.join(cwd, "www"))
