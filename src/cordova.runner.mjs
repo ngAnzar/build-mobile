@@ -77,7 +77,7 @@ export class CordovaRunner extends cli.AbstractRunner {
 
             for (const v of variants) {
                 try {
-                    await fs.copy(v, path.join(outPath, `app.apk`))
+                    await fs.copy(v, path.join(outPath, "..", `${options.__MODE__}.apk`))
                     break
                 } catch (e) {
 
