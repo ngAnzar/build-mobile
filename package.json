@@ -21,9 +21,9 @@
   "dependencies": {
     "@anzar/build": "^1.0.0",
     "@anzar/build-browser": "^1.0.0",
-    "fs-extra": "^7.0.1"
+    "fs-extra": "8.1.0"
   },
   "peerDependencies": {
-    "cordova": "^8.1.2"
+    "cordova": "9.0.0"
   }
 }
