@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const NODE_MAJOR_VERSION = Number(process.versions.node.split("."))
+const NODE_MAJOR_VERSION = Number(process.versions.node.split(".")[0])
 
 require("child_process").spawn(
     process.execPath,
