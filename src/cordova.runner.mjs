@@ -54,6 +54,8 @@ export class CordovaRunner extends cli.AbstractRunner {
                 console.log(`copy compiled to: ${path.join(cwd, "www")}`)
                 fs.copySync(outPath, path.join(cwd, "www"))
             })
+
+            await this.spawn(cordova, ["run", options.__PLATFORM__])
             //browsersync
         } else {
             let buildArgs = ["compile", options.__PLATFORM__]
