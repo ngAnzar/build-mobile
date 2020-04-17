@@ -12,20 +12,22 @@ options.setAllDefault({
 
 export default config("@anzar/build-browser", {
     target: "web",
-    output: {
-        path: path.join(options.project_path, "www", "[__MODE__]")
+    devServer: {
+        contentBase: options.out_path,
+        port: 4200,
+        historyApiFallback: true
     },
-    whenMode: {
-        development(cfg, key) {
-            return {
-                devServer: {
-                    contentBase: path.join(options.project_path, "dist", "[__MODE__]"),
-                    port: 4200,
-                    historyApiFallback: true
-                }
-            }
-        }
-    },
+    // whenMode: {
+    //     development(cfg, key) {
+    //         return {
+    //             devServer: {
+    //                 contentBase: path.join(options.project_path, "dist", "[__MODE__]"),
+    //                 port: 4200,
+    //                 historyApiFallback: true
+    //             }
+    //         }
+    //     }
+    // },
     constants: {
         __DEV_SERVER__(cfg, key) {
             if (cfg.devServer) {

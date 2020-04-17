@@ -51,12 +51,12 @@ export class CordovaRunner extends cli.AbstractRunner {
 
         if (isServe) {
             app.runners.webpack.on("compiled", () => {
-                console.log(`copy compiled to: ${path.join(cwd, "www")}`)
+                // console.log(`copy compiled to: ${path.join(cwd, "www")}`)
                 fs.copySync(outPath, path.join(cwd, "www"))
+                // this.spawn(cordova, ["run", options.__PLATFORM__], { cwd })
             })
 
-            await this.spawn(cordova, ["run", options.__PLATFORM__])
-            //browsersync
+            // await this.spawn(cordova, ["run", options.__PLATFORM__], { cwd })
         } else {
             let buildArgs = ["compile", options.__PLATFORM__]
             let buildMode = "debug"
