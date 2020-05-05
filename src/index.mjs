@@ -1,0 +1,1 @@
+export { CordovaWebpackPlugin } from "./cordova"
