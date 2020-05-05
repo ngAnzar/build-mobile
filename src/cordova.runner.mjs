@@ -28,9 +28,7 @@ export class CordovaRunner extends cli.AbstractRunner {
         await fs.mkdirp(path.join(cwd, "www"))
         await this.updateCordovaXml(options.package_json, path.join(cwd, "config.xml"))
 
-        if (fancyOutputEnabled()) {
-            await app.waitFor("webpack", "compiled")
-        }
+        await app.waitFor("webpack", "compiled")
 
         try {
             await this.spawn(cordova, ["platform", "add", options.__PLATFORM__], { cwd })
@@ -39,10 +37,6 @@ export class CordovaRunner extends cli.AbstractRunner {
         }
 
         await this.spawn(cordova, ["requirements", options.__PLATFORM__], { cwd })
-
-        if (!isServe && !fancyOutputEnabled()) {
-            await app.waitFor("webpack", "compiled")
-        }
 
         await fs.copy(outPath, path.join(cwd, "www"))
         await this.spawn(cordova, ["prepare", options.__PLATFORM__], { cwd })
@@ -61,7 +55,7 @@ export class CordovaRunner extends cli.AbstractRunner {
             let buildArgs = ["compile", options.__PLATFORM__]
             let buildMode = "debug"
 
-            if (options.__MODE__ === "production") {
+            if (options.__ENV__ === "production") {
                 buildArgs.push("--release")
                 buildMode = "release"
             } else {
@@ -79,7 +73,7 @@ export class CordovaRunner extends cli.AbstractRunner {
 
             for (const v of variants) {
                 try {
-                    await fs.copy(v, path.join(outPath, "..", `${options.__MODE__}.apk`))
+                    await fs.copy(v, path.join(outPath, "..", `${options.__ENV__}.apk`))
                     break
                 } catch (e) {
 
