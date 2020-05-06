@@ -3,6 +3,8 @@ import path from "path"
 import et from "elementtree"
 
 import { options } from "@anzar/build"
+import { resizeImage } from "./resizer"
+import { ANDROID_ICON } from "./appicon"
 
 
 class CordovaWebpackPlugin {
@@ -38,6 +40,13 @@ class CordovaWebpackPlugin {
     }
 
     apply(compiler) {
+        compiler.hooks.emit.tapAsync("CordovaWebpackPlugin", (compilation, callback) => {
+            this._generateIcons().then(callback, (e) => {
+                console.log(e)
+                callback(e)
+            })
+        })
+
         compiler.hooks.afterEmit.tapAsync("CordovaWebpackPlugin", (compilation, callback) => {
             try {
                 this.updateConfig(".", {
@@ -115,6 +124,38 @@ class CordovaWebpackPlugin {
             }
         }
         el.attrib[name] = value
+    }
+
+    async _generateIcons() {
+        const bgColorRes = `<?xml version="1.0" encoding="utf-8"?>\n<resources><color name="AppIconBg">${this.icon.background}</color></resources>`
+
+        await fs.writeFile(path.join(this.cordovaRoot, "res", "values", "AppIconColor.xml"), bgColorRes)
+        this.updateConfig("./platform[@name='android']", {
+            children: [{
+                tag: "resource-file",
+                attributes: {
+                    "src": "res/values/AppIconColor.xml",
+                    "target": "/app/src/main/res/values/AppIconColor.xml"
+                }
+            }]
+        })
+
+        const outFolder = path.join(this.cordovaRoot, ANDROID_ICON.path)
+        await fs.mkdirp(outFolder)
+        let resized = await resizeImage(this.icon.path, outFolder, ANDROID_ICON.variants)
+
+        for (const icon of resized) {
+            this.updateConfig("./platform[@name='android']", {
+                children: [{
+                    tag: "icon",
+                    attributes: {
+                        "foreground": path.relative(this.cordovaRoot, icon.path),
+                        "density": icon.variant.density,
+                        "background": "@color/AppIconBg"
+                    }
+                }]
+            })
+        }
     }
 }
 
