@@ -128,8 +128,10 @@ class CordovaWebpackPlugin {
 
     async _generateIcons() {
         const bgColorRes = `<?xml version="1.0" encoding="utf-8"?>\n<resources><color name="AppIconBg">${this.icon.background}</color></resources>`
+        const bgColorResDir = path.join(this.cordovaRoot, "res", "values")
 
-        await fs.writeFile(path.join(this.cordovaRoot, "res", "values", "AppIconColor.xml"), bgColorRes)
+        await fs.mkdirp(bgColorResDir)
+        await fs.writeFile(path.join(bgColorResDir, "AppIconColor.xml"), bgColorRes)
         this.updateConfig("./platform[@name='android']", {
             children: [{
                 tag: "resource-file",
