@@ -27,7 +27,6 @@ export class CordovaRunner extends cli.AbstractRunner {
         await fs.mkdirp(path.join(cwd, "platforms"))
         await fs.mkdirp(path.join(cwd, "plugins"))
         await fs.mkdirp(path.join(cwd, "www"))
-        // await this.updateCordovaXml(options.package_json, path.join(cwd, "config.xml"))
 
         await app.waitFor("webpack", "compiled")
 
@@ -123,22 +122,4 @@ export class CordovaRunner extends cli.AbstractRunner {
         promise.proc = proc
         return promise
     }
-
-    async copyFirst(paths, outPath) {
-
-    }
-
-    // async updateCordovaXml(packageJson, cordovaXml) {
-    //     const pkg = await fs.readJson(packageJson)
-    //     let xml = await fs.readFile(cordovaXml, "utf8")
-
-    //     if (!pkg.author) {
-    //         throw new Error(`Missing author field from ${packageJson}`)
-    //     }
-
-    //     xml = xml.replace(/(<widget[^<>]+)version=".*?"/mg, `$1version="${pkg.version}"`)
-    //     xml = xml.replace(/<author[\s\S]*?<\/author>/m, `<author email="${pkg.author.email}" href="${pkg.author.url}">${pkg.author.name}</author>`)
-
-    //     await fs.writeFile(cordovaXml, xml)
-    // }
 }
