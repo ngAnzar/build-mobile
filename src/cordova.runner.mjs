@@ -18,6 +18,7 @@ export class CordovaRunner extends cli.AbstractRunner {
     async run(app, args) {
         const isWin = process.platform === "win32"
         const cordova = "cordova" + (isWin ? ".cmd" : "")
+        const gradlew = "gradlew" + (isWin ? ".bat" : "")
         // TODO: valami config
         const cwd = path.join(options.project_path, "cordova")
         const outPath = options.out_path
@@ -55,11 +56,11 @@ export class CordovaRunner extends cli.AbstractRunner {
             let buildArgs = ["compile", options.__PLATFORM__]
             let buildMode = "debug"
 
-            if (options.__ENV__ === "production") {
+            if (options.__ENV__ === "development") {
+                buildArgs.push("--debug")
+            } else {
                 buildArgs.push("--release")
                 buildMode = "release"
-            } else {
-                buildArgs.push("--debug")
             }
 
             await this.spawn(cordova, buildArgs, { cwd })
@@ -78,6 +79,12 @@ export class CordovaRunner extends cli.AbstractRunner {
                 } catch (e) {
 
                 }
+            }
+
+            if (options.__ENV__ !== "development" && options.__PLATFORM__ === "android") {
+                const gradlewCwd = path.join(cwd, "platforms", "android")
+                await this.spawn(gradlew, ["bundleRelease"], { cwd: gradlewCwd })
+                await fs.copy(path.join(gradlewCwd, "app", "build", "outputs", "bundle", "release", "app.aab"), path.join(outPath, "..", `${options.__ENV__}.aab`))
             }
 
             this.emit("compiled")
@@ -115,6 +122,10 @@ export class CordovaRunner extends cli.AbstractRunner {
 
         promise.proc = proc
         return promise
+    }
+
+    async copyFirst(paths, outPath) {
+
     }
 
     // async updateCordovaXml(packageJson, cordovaXml) {
