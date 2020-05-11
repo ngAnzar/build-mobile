@@ -13,6 +13,7 @@ class CordovaWebpackPlugin {
         this.configXml = options.config
         this.cordovaRoot = options.root
         this.icon = options.icon
+        this.preferences = options.preferences
 
         this._configUpdates = []
     }
@@ -59,6 +60,25 @@ class CordovaWebpackPlugin {
                     },
                     data: options.pkg.author.name
                 })
+
+                if (this.preferences) {
+                    for (const k in this.preferences) {
+                        if (this.preferences.hasOwnProperty(k)) {
+                            this.updateConfig(".", {
+                                children: [
+                                    {
+                                        tag: "preference",
+                                        attributes: {
+                                            name: k,
+                                            value: this.preferences[k]
+                                        }
+                                    }
+                                ]
+                            })
+                        }
+                    }
+                }
+
             } catch (e) {
                 console.log(e, e.stack)
                 callback(e)
