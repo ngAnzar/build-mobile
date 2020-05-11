@@ -82,7 +82,7 @@ export class CordovaRunner extends cli.AbstractRunner {
 
             if (options.__ENV__ !== "development" && options.__PLATFORM__ === "android") {
                 const gradlewCwd = path.join(cwd, "platforms", "android")
-                await this.spawn(gradlew, ["bundleRelease"], { cwd: gradlewCwd })
+                await this.spawn(path.join(gradlewCwd, gradlew), ["bundleRelease"], { cwd: gradlewCwd })
                 await fs.copy(path.join(gradlewCwd, "app", "build", "outputs", "bundle", "release", "app.aab"), path.join(outPath, "..", `${options.__ENV__}.aab`))
             }
 
