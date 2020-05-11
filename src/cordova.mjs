@@ -1,6 +1,7 @@
 import fs from "fs-extra"
 import path from "path"
 import et from "elementtree"
+import semverParse from "semver/functions/parse"
 
 import { options } from "@anzar/build"
 import { resizeImage } from "./resizer"
@@ -49,11 +50,7 @@ class CordovaWebpackPlugin {
 
         compiler.hooks.afterEmit.tapAsync("CordovaWebpackPlugin", (compilation, callback) => {
             try {
-                this.updateConfig(".", {
-                    attributes: {
-                        "version": options.__VERSION__
-                    }
-                })
+                this.updateConfig(".", { attributes: this._getVersionAttrs() })
                 this.updateConfig("./name", { data: options.TITLE })
                 this.updateConfig("./author", {
                     attributes: {
@@ -158,6 +155,38 @@ class CordovaWebpackPlugin {
                 }]
             })
         }
+    }
+
+    _getVersionAttrs() {
+        const version = semverParse(options.__VERSION__)
+
+        let versionCode = `${version.major}${leadingZero(version.minor)}${leadingZero(version.patch)}`
+        let pre = 99
+        if (version.prerelease && version.prerelease.length) {
+            if (version.prerelease[0] === "alpha") {
+                pre = version.prerelease[1] || 0
+            } else if (version.prerelease[0] === "beta") {
+                pre = (version.prerelease[1] || 0) + 30
+            } else if (version.prerelease[0] === "rc") {
+                pre = (version.prerelease[1] || 0) + 60
+            }
+        }
+        versionCode = `${versionCode}${leadingZero(pre)}`
+
+        return {
+            "version": options.__VERSION__,
+            "android-versionCode": versionCode
+        }
+
+    }
+}
+
+
+function leadingZero(value) {
+    if (value < 10) {
+        return `0${value}`
+    } else {
+        return value.toString()
     }
 }
 
