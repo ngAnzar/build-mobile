@@ -99,6 +99,7 @@ class CordovaWebpackPlugin {
         for (const update of this._configUpdates) {
             this._applyUpdate(tree, update.path, update.options)
         }
+        this._configUpdates.length = 0
 
         const updated = tree.write({
             encoding: "utf-8",
