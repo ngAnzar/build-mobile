@@ -4,8 +4,9 @@ import et from "elementtree"
 import semverParse from "semver/functions/parse"
 
 import { options } from "@anzar/build"
-import { resizeImage } from "./resizer"
+import { resizeImage, createSplashScreen } from "./image"
 import { ANDROID_ICON } from "./appicon"
+import { ANDROID_SPLASH } from "./splashscreen"
 
 
 class CordovaWebpackPlugin {
@@ -13,6 +14,7 @@ class CordovaWebpackPlugin {
         this.configXml = options.config
         this.cordovaRoot = options.root
         this.icon = options.icon
+        this.splash = options.splash
         this.preferences = options.preferences
 
         this._configUpdates = []
@@ -43,7 +45,7 @@ class CordovaWebpackPlugin {
 
     apply(compiler) {
         compiler.hooks.emit.tapAsync("CordovaWebpackPlugin", (compilation, callback) => {
-            this._generateIcons().then(callback, (e) => {
+            this._generateAssets().then(callback, (e) => {
                 console.log(e)
                 callback(e)
             })
@@ -144,6 +146,16 @@ class CordovaWebpackPlugin {
         el.attrib[name] = value
     }
 
+    async _generateAssets() {
+        if (this.icon) {
+            await this._generateIcons()
+        }
+
+        if (this.splash) {
+            await this._generateSplash()
+        }
+    }
+
     async _generateIcons() {
         const bgColorRes = `<?xml version="1.0" encoding="utf-8"?>\n<resources><color name="AppIconBg">${this.icon.background}</color></resources>`
         const bgColorResDir = path.join(this.cordovaRoot, "res", "values")
@@ -172,6 +184,24 @@ class CordovaWebpackPlugin {
                         "foreground": path.relative(this.cordovaRoot, icon.path),
                         "density": icon.variant.density,
                         "background": "@color/AppIconBg"
+                    }
+                }]
+            })
+        }
+    }
+
+    async _generateSplash() {
+        const outFolder = path.join(this.cordovaRoot, ANDROID_SPLASH.path)
+        await fs.mkdirp(outFolder)
+        let resized = await createSplashScreen(this.splash.path, outFolder, ANDROID_SPLASH.variants, this.splash.background || "#FFFFFF")
+
+        for (const splash of resized) {
+            this.updateConfig("./platform[@name='android']", {
+                children: [{
+                    tag: "splash",
+                    attributes: {
+                        "src": path.relative(this.cordovaRoot, splash.path),
+                        "density": splash.variant.density
                     }
                 }]
             })
