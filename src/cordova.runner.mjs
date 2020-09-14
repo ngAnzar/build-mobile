@@ -83,7 +83,8 @@ export class CordovaRunner extends cli.AbstractRunner {
             if (options.__ENV__ !== "development" && options.__PLATFORM__ === "android") {
                 const gradlewCwd = path.join(cwd, "platforms", "android")
                 await this.spawn(path.join(gradlewCwd, gradlew), ["bundleRelease"], { cwd: gradlewCwd })
-                await fs.copy(path.join(gradlewCwd, "app", "build", "outputs", "bundle", "release", "app.aab"), path.join(outPath, "..", `${options.__ENV__}.aab`))
+                let aabName = buildMode === "release" ? "app-release.aab" : "app.aab"
+                await fs.copy(path.join(gradlewCwd, "app", "build", "outputs", "bundle", "release", aabName), path.join(outPath, "..", `${options.__ENV__}.aab`))
             }
 
             this.emit("compiled")
