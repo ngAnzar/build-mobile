@@ -10,36 +10,4 @@ options.setAllDefault({
 })
 
 
-export default config("@anzar/build-browser", {
-    target: "web",
-    devServer: {
-        contentBase: options.out_path,
-        port: 4200,
-        historyApiFallback: true
-    },
-    // whenMode: {
-    //     development(cfg, key) {
-    //         return {
-    //             devServer: {
-    //                 contentBase: path.join(options.project_path, "dist", "[__MODE__]"),
-    //                 port: 4200,
-    //                 historyApiFallback: true
-    //             }
-    //         }
-    //     }
-    // },
-    constants: {
-        __DEV_SERVER__(cfg, key) {
-            if (cfg.devServer) {
-                let dvs = cfg.devServer
-                return url.format({
-                    protocol: dvs.https ? "https" : "http",
-                    hostname: dvs.host ? dvs.host : "localhost",
-                    port: dvs.port
-                })
-            } else {
-                return null
-            }
-        }
-    }
-})
+export default config("@anzar/build-browser", {})
