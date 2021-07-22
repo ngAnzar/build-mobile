@@ -21,12 +21,12 @@
   "dependencies": {
     "@anzar/build": "^1.0.0",
     "@anzar/build-browser": "^1.0.0",
-    "fs-extra": "9.1.0",
-    "jimp": "0.16.1",
     "elementtree": "^0.1.7",
-    "semver": "7.3.4"
+    "fs-extra": "^10.0.0",
+    "jimp": "^0.16.1",
+    "semver": "^7.3.5"
   },
   "peerDependencies": {
-    "cordova": "10.0.0"
+    "cordova": "^10.0.0"
   }
 }
