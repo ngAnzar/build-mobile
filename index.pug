@@ -10,8 +10,7 @@ block meta
     meta(http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval'; style-src 'self' 'unsafe-inline'; media-src *; img-src 'self' data: content:;")
 
 block base-href
-  if __PLATFORM__ == "android"
-    base(href="/android_asset/www/")
+  base(href="/")
 
 block js
   script(src="cordova.js" type="text/javascript" defer)

@@ -17,11 +17,11 @@ export const ANDROID_SPLASH = {
         // { name: "port-xxhdpi.png", density: "port-xxhdpi", width: 960, height: 1600 },
         // { name: "port-xxxhdpi.png", density: "port-xxxhdpi", width: 1280, height: 1920 },
 
-        { name: "ldpi.9.png", density: "ldpi", width: 200, height: 200, ninePatch: true },
-        { name: "mdpi.9.png", density: "mdpi", width: 320, height: 320, ninePatch: true },
-        { name: "hdpi.9.png", density: "hdpi", width: 480, height: 480, ninePatch: true },
-        { name: "xhdpi.9.png", density: "xhdpi", width: 720, height: 720, ninePatch: true },
-        { name: "xxhdpi.9.png", density: "xxhdpi", width: 960, height: 960, ninePatch: true },
-        { name: "xxxhdpi.9.png", density: "xxxhdpi", width: 1280, height: 1280, ninePatch: true },
+        // { name: "ldpi.9.png", density: "ldpi", width: 200, height: 200, ninePatch: true },
+        // { name: "mdpi.9.png", density: "mdpi", width: 320, height: 320, ninePatch: true },
+        // { name: "hdpi.9.png", density: "hdpi", width: 480, height: 480, ninePatch: true },
+        // { name: "xhdpi.9.png", density: "xhdpi", width: 720, height: 720, ninePatch: true },
+        // { name: "xxhdpi.9.png", density: "xxhdpi", width: 960, height: 960, ninePatch: true },
+        { name: "xxxhdpi.9.png", density: "xxxhdpi", width: 2732, height: 2732, ninePatch: true },
     ]
 }

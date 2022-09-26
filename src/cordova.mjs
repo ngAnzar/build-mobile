@@ -198,10 +198,10 @@ class CordovaWebpackPlugin {
         for (const splash of resized) {
             this.updateConfig("./platform[@name='android']", {
                 children: [{
-                    tag: "splash",
+                    tag: "preference",
                     attributes: {
-                        "src": path.relative(this.cordovaRoot, splash.path),
-                        "density": splash.variant.density
+                        "name": "AndroidWindowSplashScreenAnimatedIcon",
+                        "value": path.relative(this.cordovaRoot, splash.path),
                     }
                 }]
             })
